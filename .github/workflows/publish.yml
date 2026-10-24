@@ -1,6 +1,7 @@
-# tag 推送（v*）→ 构建 + 全量校验 + 发布 npm + 建 GitHub Release。
-# 认证走 npm Trusted Publishing（OIDC，无令牌）：npmjs.com 包设置里需登记
-# 可信发布者 KyoMio/dsh-zen-remote + 本文件名 publish.yml，此外零配置。
+# tag 推送（v*）→ 构建 + 全量校验 → 发布 + GitHub Release。
+# 上游仓库（KyoMio/dsh-zen-remote）继续走 npm Trusted Publishing；
+# fork（Zijian-Wang/dsh-zen-remote）没有 npm 发布权限，跳过 npm，
+# 改为把 pnpm pack 的 tgz 挂到 GitHub Release 上，机器端用 tag 或 tgz 安装。
 name: publish
 
 on:
@@ -50,10 +51,17 @@ jobs:
 
       # Trusted Publishing：pnpm ≥10.14 原生支持 OIDC（packageManager 钉的
       # 11.7.0 满足），provenance 随可信发布自动生成，无需令牌与 --provenance。
+      # 该发布者只登记在 KyoMio 名下；fork 跳过这一步，Release 仍然会建。
       - run: pnpm publish --no-git-checks
+        if: github.repository == 'KyoMio/dsh-zen-remote'
 
-      # Release 排在 npm 之后：它宣告的是「这个版本已经发出去了」。npm 那步失败
-      # 就不该留下 Release，顺序反过来会得到一个指向不存在版本的发布页。
+      # fork 的发版产物：pnpm pack 的 tgz 由下面的 Release 步骤上传。
+      - name: Pack tarball
+        if: github.repository != 'KyoMio/dsh-zen-remote'
+        run: pnpm pack
+
+      # 上游：Release 排在 npm 之后，它宣告的是「这个版本已经发出去了」。
+      # fork：没有 npm 那一步，Release 就是唯一的发版产物（带 tgz 附件）。
       #
       # gh 是 ubuntu-latest 自带的，不引第三方 action；--generate-notes 让
       # GitHub 按上一个 tag 以来的提交自动写发布说明，不用维护 changelog 文件。
@@ -67,9 +75,15 @@ jobs:
         run: |
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             echo "release $GITHUB_REF_NAME 已存在，跳过"
-          else
+          elif [ "$GITHUB_REPOSITORY" = "KyoMio/dsh-zen-remote" ]; then
             gh release create "$GITHUB_REF_NAME" \
               --verify-tag \
               --title "$GITHUB_REF_NAME" \
               --generate-notes
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --verify-tag \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes \
+              ./dsh-zen-remote-*.tgz
           fi

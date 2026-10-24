@@ -238,7 +238,11 @@ test('a chunked plugin answer streams in order with its whitelisted headers', as
     dsh.release('chunk-3\n')
     dsh.finish()
     await done
-    assert.deepEqual(seen, ['chunk-1\n', 'chunk-2\n', 'chunk-3\n'], 'the chunks arrive in wire order')
+    // HTTP does not promise one `data` event per `write()`: Node may coalesce
+    // adjacent chunks before the reader sees them (observed on Node 26, where
+    // chunk-2/chunk-3 arrive as one buffer). The ordering invariant belongs to
+    // the byte stream, so assert the concatenation rather than packet borders.
+    assert.equal(seen.join(''), 'chunk-1\nchunk-2\nchunk-3\n', 'the chunks arrive in wire order')
   } finally {
     await dsh.stop()
   }

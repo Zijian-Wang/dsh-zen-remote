@@ -16,6 +16,10 @@
 
 <p align="center"><a href="README.zh-CN.md">中文文档</a></p>
 
+> **Fork build.** The npm package `dsh-zen-remote` belongs to the upstream author (KyoMio); this repository is Zijian-Wang's fork and is not published to npm. Install this build from a GitHub Release tag or the attached tgz:
+> `dsh plugin --profile web add 'github:Zijian-Wang/dsh-zen-remote#<tag>'`
+> Desktop app: Plugins → Add plugin → Install third-party plugin → paste the same spec.
+
 | Session list home | Session page | Session info card |
 | --- | --- | --- |
 | ![Session list home](assets/home.png) | ![Session page](assets/session.png) | ![Session info card](assets/info.png) |
@@ -94,7 +98,7 @@ dsh plugin --profile web add dsh-zen-remote
 // ~/.dsh/profiles/desktop/package.json
 {
   "dependencies": {
-    "dsh-zen-remote": "^2.2.5"        // for local development: "link:/path/to/dsh-zen-remote"
+    "dsh-zen-remote": "^2.2.6"        // for local development: "link:/path/to/dsh-zen-remote"
   }
 }
 ```

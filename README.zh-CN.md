@@ -16,6 +16,10 @@
 
 <p align="center"><a href="README.md">English</a></p>
 
+> **这是 Zijian-Wang 的 fork 构建。** npm 上的 `dsh-zen-remote` 属于上游作者 KyoMio；本仓库没有发布到 npm。安装本仓库的构建请用 GitHub Release 里的 tag 或 tgz：
+> `dsh plugin --profile web add 'github:Zijian-Wang/dsh-zen-remote#<tag>'`
+> 桌面端在「插件」页 →「添加插件」→「安装第三方插件」填同一个 spec。
+
 | 会话列表主屏 | 会话页 | 会话信息卡 |
 | --- | --- | --- |
 | ![会话列表主屏](assets/home.png) | ![会话页](assets/session.png) | ![会话信息卡](assets/info.png) |
@@ -94,7 +98,7 @@ dsh plugin --profile web add dsh-zen-remote
 // ~/.dsh/profiles/desktop/package.json
 {
   "dependencies": {
-    "dsh-zen-remote": "^2.2.5"        // 本地开发换成 "link:/path/to/dsh-zen-remote"
+    "dsh-zen-remote": "^2.2.6"        // 本地开发换成 "link:/path/to/dsh-zen-remote"
   }
 }
 ```
